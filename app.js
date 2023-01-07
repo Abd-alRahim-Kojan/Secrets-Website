@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5");
 
 const app = express();
 
@@ -31,10 +31,6 @@ const userSchema = new mongoose.Schema ({
     password: String
 });
 
-//Encrypt password field by mongoose-encrypt moudle and use it before create a Model
-//We move SECRET_KEY to .env file
-userSchema.plugin(encrypt, { secret: process.env.SECRET, encryptedFields: ['password'] });
-
 //Mongoose Model(collection)
 const User = mongoose.model("User", userSchema);
 
@@ -55,7 +51,7 @@ app.get("/register", function(req,res){
 app.post("/register", function(req, res){
     const newUser = new User({
         emial: req.body.username,
-        password: req.body.password
+        password: md5(req.body.password)
     });
 
     newUser.save(function(error){
@@ -69,7 +65,7 @@ app.post("/register", function(req, res){
 
 app.post("/login", function(req, res){
     const username = req.body.username;
-    const password = req.body.password;
+    const password = md5(req.body.password)
 
     User.findOne({emial: username}, function(err, foundUser) {
         if (err) {
