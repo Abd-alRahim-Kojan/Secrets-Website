@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
 
@@ -21,10 +22,14 @@ async function main() {
 }
 
 //Mongoose Schema
-const userSchema = {
+const userSchema = new mongoose.Schema ({
     emial: String,
     password: String
-  };
+});
+
+//Encrypt password field by mongoose-encrypt moudle and use it before create a Model
+const secret = "Thisisourlittlesecret";
+userSchema.plugin(encrypt, { secret: secret, encryptedFields: ['password'] });
 
 //Mongoose Model(collection)
 const User = mongoose.model("User", userSchema);
