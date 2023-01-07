@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -5,6 +6,9 @@ const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
 
 const app = express();
+
+//we use this line to sure that .env variables is work
+//console.log(process.env.API_KEY);
 
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
@@ -28,8 +32,8 @@ const userSchema = new mongoose.Schema ({
 });
 
 //Encrypt password field by mongoose-encrypt moudle and use it before create a Model
-const secret = "Thisisourlittlesecret";
-userSchema.plugin(encrypt, { secret: secret, encryptedFields: ['password'] });
+//We move SECRET_KEY to .env file
+userSchema.plugin(encrypt, { secret: process.env.SECRET, encryptedFields: ['password'] });
 
 //Mongoose Model(collection)
 const User = mongoose.model("User", userSchema);
